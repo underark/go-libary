@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"log"
+)
 
 type book struct {
 	title  string
@@ -8,10 +12,24 @@ type book struct {
 }
 
 func main() {
-	book := newBook("Fear and Loathing in Las Vegas", "Hunter S Thompson")
+	log.SetFlags(0)
+
+	book, err := newBook("Book", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println(book)
 }
 
-func newBook(title string, author string) book {
-	return book{title: title, author: author}
+func newBook(title string, author string) (book, error) {
+	if title == "" {
+		return book{}, errors.New("error: field 'title' is empty")
+	}
+
+	if author == "" {
+		return book{}, errors.New("error: field 'author' is empty")
+	}
+
+	return book{title: title, author: author}, nil
 }
