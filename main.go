@@ -13,10 +13,14 @@ type book struct {
 	Author string `json:"author"`
 }
 
-var books = []book{}
+var books = []book{
+	{"Frankenstein", "Mary Shelley"},
+	{"Fear and Loathing in Las Vegas", "Hunter S Thompson"},
+}
 
 func main() {
 	router := gin.Default()
+	router.LoadHTMLGlob("./templates/*")
 	router.POST("/books", newBookHandler)
 	router.GET("/books", getBooksHandler)
 	router.Run("localhost:8080")
@@ -42,9 +46,15 @@ func newBookHandler(c *gin.Context) {
 	}
 
 	books = append(books, newBook)
-	c.IndentedJSON(http.StatusCreated, books)
+	c.IndentedJSON(http.StatusCreated, gin.H{
+		"title": "My Library",
+		"books": books,
+	})
 }
 
 func getBooksHandler(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, books)
+	c.HTML(http.StatusOK, "getBooks.tmpl", gin.H{
+		"title": "My Library",
+		"books": books,
+	})
 }

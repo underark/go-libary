@@ -1,0 +1,13 @@
+{{ define "getBooks.tmpl" }}
+<html>
+  <h1>{{ .title }}</h1>
+
+  <body>
+    <ul>
+      {{ range .books }}
+      <li>{{.Title}}</li>
+      {{ end }}
+    </ul>
+  </body>
+</html>
+{{ end }}
