@@ -3,23 +3,22 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type book struct {
-	title  string
-	author string
+	Title  string `json:"title"`
+	Author string `json:"author"`
 }
 
+var books = []book{}
+
 func main() {
-	log.SetFlags(0)
-
-	book, err := newBook("Book", "")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(book)
+	router := gin.Default()
+	router.POST("/books", newBookHandler)
+	router.Run("localhost:8080")
 }
 
 func newBook(title string, author string) (book, error) {
@@ -31,5 +30,16 @@ func newBook(title string, author string) (book, error) {
 		return book{}, errors.New("error: field 'author' is empty")
 	}
 
-	return book{title: title, author: author}, nil
+	return book{Title: title, Author: author}, nil
+}
+
+func newBookHandler(c *gin.Context) {
+	var newBook book
+	if err := c.BindJSON(&newBook); err != nil {
+		fmt.Println("error with BindJSON")
+		return
+	}
+
+	books = append(books, newBook)
+	c.IndentedJSON(http.StatusCreated, books)
 }
