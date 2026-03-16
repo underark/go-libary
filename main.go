@@ -18,6 +18,7 @@ var books = []book{}
 func main() {
 	router := gin.Default()
 	router.POST("/books", newBookHandler)
+	router.GET("/books", getBooksHandler)
 	router.Run("localhost:8080")
 }
 
@@ -42,4 +43,8 @@ func newBookHandler(c *gin.Context) {
 
 	books = append(books, newBook)
 	c.IndentedJSON(http.StatusCreated, books)
+}
+
+func getBooksHandler(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, books)
 }
