@@ -21,6 +21,7 @@ var books = []book{
 func main() {
 	router := gin.Default()
 	router.HTMLRender = createRenderer()
+	router.Static("/templates", "./templates")
 	router.GET("/", indexHandler)
 	router.POST("/add", newBookHandler)
 	router.GET("/books", getBooksHandler)

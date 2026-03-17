@@ -1,17 +1,18 @@
 {{ define "base.tmpl" }}
 <html>
     <head>
-        <link rel="stylesheet" href="styles.css"> 
+        <link rel="stylesheet" href="templates/styles.css"> 
     </head>
     <body>
-    <nav>
-        <a href="/">Add a book</a>
-        <a href="/books">Books</a>
-    </nav>
-
-    <h1>{{ .title }}</h1>
-    
-    {{ block "content" . }}{{ end }}
+        <nav>
+            <a href="/">Add a book</a>
+            <a href="/books">Books</a>
+        </nav>
+        <div class="content">
+            <h1>{{ .title }}</h1>
+            
+            {{ block "content" . }}{{ end }}
+        </div>
     </body>
 </html>
 {{ end }}
