@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,15 +20,22 @@ var books = []book{
 
 func main() {
 	router := gin.Default()
-	router.LoadHTMLGlob("./templates/*")
+	router.HTMLRender = createRenderer()
 	router.GET("/", indexHandler)
 	router.POST("/add", newBookHandler)
 	router.GET("/books", getBooksHandler)
 	router.Run("localhost:8080")
 }
 
+func createRenderer() multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+	r.AddFromFiles("index", "templates/base.tmpl", "templates/pages/index.tmpl")
+	r.AddFromFiles("books", "templates/base.tmpl", "templates/pages/getBooks.tmpl")
+	return r
+}
+
 func indexHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "Home",
 	})
 }
@@ -57,7 +65,7 @@ func newBookHandler(c *gin.Context) {
 }
 
 func getBooksHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "getBooks.tmpl", gin.H{
+	c.HTML(http.StatusOK, "books", gin.H{
 		"title": "My Library",
 		"books": books,
 	})
