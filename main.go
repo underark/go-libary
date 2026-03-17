@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,23 +32,28 @@ func indexHandler(c *gin.Context) {
 	})
 }
 
-func newBook(c *gin.Context) error {
-	var newBook book
-	if err := c.BindJSON(&newBook); err != nil {
-		fmt.Println("error with BindJSON")
-		return err
+func newBook(title string, author string) (book, error) {
+	if title == "" {
+		return book{}, errors.New("error: field 'title' is empty")
 	}
 
-	books = append(books, newBook)
-	return nil
+	if author == "" {
+		return book{}, errors.New("error: field 'author' is empty")
+	}
+
+	return book{Title: title, Author: author}, nil
 }
 
 func newBookHandler(c *gin.Context) {
-	if err := newBook(c); err != nil {
+	title := c.PostForm("title")
+	author := c.PostForm("author")
+	if book, err := newBook(title, author); err != nil {
 		c.Error(err)
+	} else {
+		books = append(books, book)
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/books")
+	c.Redirect(http.StatusFound, "/books")
 }
 
 func getBooksHandler(c *gin.Context) {
