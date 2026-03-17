@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -21,35 +20,28 @@ var books = []book{
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("./templates/*")
-	router.POST("/books", newBookHandler)
+	router.POST("/add", newBookHandler)
 	router.GET("/books", getBooksHandler)
 	router.Run("localhost:8080")
 }
 
-func newBook(title string, author string) (book, error) {
-	if title == "" {
-		return book{}, errors.New("error: field 'title' is empty")
-	}
-
-	if author == "" {
-		return book{}, errors.New("error: field 'author' is empty")
-	}
-
-	return book{Title: title, Author: author}, nil
-}
-
-func newBookHandler(c *gin.Context) {
+func newBook(c *gin.Context) error {
 	var newBook book
 	if err := c.BindJSON(&newBook); err != nil {
 		fmt.Println("error with BindJSON")
-		return
+		return err
 	}
 
 	books = append(books, newBook)
-	c.IndentedJSON(http.StatusCreated, gin.H{
-		"title": "My Library",
-		"books": books,
-	})
+	return nil
+}
+
+func newBookHandler(c *gin.Context) {
+	if err := newBook(c); err != nil {
+		c.Error(err)
+	}
+
+	c.Redirect(http.StatusTemporaryRedirect, "/books")
 }
 
 func getBooksHandler(c *gin.Context) {
