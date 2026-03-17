@@ -20,9 +20,16 @@ var books = []book{
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("./templates/*")
+	router.GET("/", indexHandler)
 	router.POST("/add", newBookHandler)
 	router.GET("/books", getBooksHandler)
 	router.Run("localhost:8080")
+}
+
+func indexHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"title": "Home",
+	})
 }
 
 func newBook(c *gin.Context) error {
